@@ -15,16 +15,10 @@ from app.bot.handlers import profile, createOrEditProfile, tests, editProfile, a
 from app.YaDisk.forBot import diskHandlers
 from app.bot.tokenLoader import config
 
-bots = [
-    Bot(
+bot = Bot(
         token=config.tg_token.get_secret_value(),
         default=DefaultBotProperties(
-            parse_mode=ParseMode.HTML)),
-    Bot(
-        token="7408213884:AAERALzfLCmXVyX3YUif1xJA6clKj6TK35I",
-        default=DefaultBotProperties(
             parse_mode=ParseMode.HTML))
-]
 
 dp = Dispatcher()
 
@@ -44,8 +38,7 @@ async def main():
         editProfile.router,
         addToGroup.router
     )
-    await bots[for num in rang].delete_webhook(drop_pending_updates=True)
-    await bots
+    await bot.delete_webhook(drop_pending_updates=True)
 
 
 if __name__ == "__main__":
