@@ -1,0 +1,6 @@
+aiogram
+yadisk
+sqlalchemy
+pydantic_settings
+httpx
+asyncpg
