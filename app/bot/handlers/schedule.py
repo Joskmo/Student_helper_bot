@@ -38,6 +38,7 @@ async def get_schedule(message: Message):
     tg_nickname = message.from_user.username
     group = await get_group_by_student(tg_nickname)
     if group:
+        # need to check if the gorup is relevant and schedule exists
         res = await find_schedule(group.full_name, None) # внимание!!! Тут нужно поменять None на текущую неделю. Сиди, сука, и думай
         schedule = res['schedule']
         reply_text = schedule_parser(schedule)
