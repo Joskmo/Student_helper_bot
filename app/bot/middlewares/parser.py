@@ -22,7 +22,8 @@ time_dict = {
 #dictionary for lesson type
 lesson_type_dict = {
     'Практическое занятие': 'sem',
-    'Лекция': 'lect'
+    'Лекция': 'lect',
+    'Лабораторная работа': 'lab'
 }
 
 # List if days of the week
@@ -70,7 +71,7 @@ def get_schedule(group_dict: dict):
             cur_day = classes.Day(date=date, name=string.capwords(day)) # date
 
             # find only lessons
-            slots = day_table.find_all('tr', class_='slot load-lecture') + day_table.find_all('tr', class_='slot load-seminar-2')
+            slots = day_table.find_all('tr', class_='slot load-lecture') + day_table.find_all('tr', class_='slot load-seminar-2') + day_table.find_all('tr', class_='slot load-lab')
             if slots:
                 cur_day.lessons = []
                 for slot in slots:
