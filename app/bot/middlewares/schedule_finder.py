@@ -11,6 +11,7 @@ async def find_schedule(group_name: str, week_num):
         }
         schedule = classes.Schedule(group=group_name)
         schedule.schedule = parser.get_schedule(group_dict)
-        result = schedule_dict = schedule.model_dump()
+        result = schedule.model_dump()
+        await add_schedule(result)
     
     return result
