@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 def main_kb() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Мой профиль")
+    kb.button(text="Открыть расписание")
     # kb.button(text="Перейти в файлы")
     kb.button(text="Тут будут ещё функции 😉")
     kb.adjust(2)

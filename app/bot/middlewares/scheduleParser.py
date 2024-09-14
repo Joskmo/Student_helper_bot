@@ -1,0 +1,114 @@
+import requests
+import json
+import re
+import classes
+from bs4 import BeautifulSoup
+
+rasp_dict = {}
+
+# dictionary for timetable (get time by lesson num)
+time_dict = {
+    1: "08:30 - 10:00",
+    2: "10:10 - 12:40",
+    3: "12:50 - 13:20",
+    4: "14:00 - 15:30",
+    5: "15:40 - 17:10",
+    6: "17:20 - 18:50",
+    7: "18:55 - 20:25", 
+    8: "20:30 - 22:00"
+}
+
+#dictionary for lesson type
+lesson_type_dict = {
+    'Практическое занятие': 'sem',
+    'Лекция': 'lect'
+}
+
+# List if days of the week
+days_of_week = [
+    "ПОНЕДЕЛЬНИК",
+    "ВТОРНИК",
+    "СРЕДА",
+    "ЧЕТВЕРГ",
+    "ПЯТНИЦА",
+    "СУББОТА"
+]
+
+headers = {
+    'X-Requested-With': 'XMLHttpRequest',
+}
+
+link = "https://rasp.rea.ru/Schedule/ScheduleCard?selection="
+# weekNum = 1
+group_num = "15.27Д-БИ20/22б"
+group_link = link + group_num.lower() + "&weekNum=" # + str(weekNum)
+
+
+response = requests.get(
+    # 'https://rasp.rea.ru/Schedule/ScheduleCard?selection=15.27д-би20/22б&weekNum=1',
+    group_link,
+    headers=headers,
+).text
+
+# parse HTML data
+soup = BeautifulSoup(response, 'html.parser')
+
+tables = soup.find_all('table', class_='table table-light')
+
+for day, day_num in zip(days_of_week, range(0, 6)):
+    
+    time_flag = False
+    
+    day_table = next((table for table in tables if day in table.find('h5').get_text()), None)
+    if day_table:
+        
+        print(day)
+
+        date_text = day_table.find('h5').get_text()
+        date = date_text.split(', ')[1]
+        cur_day = classes.Day(date=date, name=day) # date
+
+        # find only lessons
+        slots = day_table.find_all('tr', class_='slot load-lecture') + day_table.find_all('tr', class_='slot load-seminar-2')
+        if slots:
+            cur_day.lessons = []
+            for slot in slots:
+                
+
+                # info about lesson num(). We need only num of pair -> use regular expression
+                time_info = int(re.match(r'\d', (slot.find('span', class_='pcap').get_text(strip=True)))[0])
+                if (not time_flag):
+                    cur_day.first_lesson_num = time_info # first_lesson_num
+                    time_flag = True
+                
+                cur_less = classes.Lesson(num=time_info)
+                cur_less.time = time_dict[time_info]
+
+                lesson_link = slot.find('a', class_='task')
+                if lesson_link:
+                    title = lesson_link.contents[0].strip() # name of lesson
+                    cur_less.name = title
+
+                    lesson_type = lesson_type_dict[lesson_link.i.get_text(strip=True)] # type of lesson from dict
+                    cur_less.type = lesson_type
+
+                    location_parts = list(lesson_link.stripped_strings)[2]
+                    match = re.search(r'(\d+)\s*корпус\s*-\s*([\d/*.]+|[\w/ №\d]+)', location_parts)
+                    if match:
+                        location = f"{match.group(1)[0]}к {match.group(2)}"
+                    else:
+                        location = "Неизвестно"
+                    cur_less.place = location
+
+                print(cur_less)
+                cur_day.lessons.append(cur_less)
+        
+        # if no lessons
+        # else:
+
+
+        day_dict = cur_day.model_dump()
+        rasp_dict[str(day_num)] = day_dict
+
+with open('test.json', 'w', encoding='utf-8') as file:
+    json.dump(rasp_dict, file, indent=4, ensure_ascii=False)

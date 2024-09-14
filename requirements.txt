@@ -1,6 +1,9 @@
 aiogram
 yadisk
-sqlalchemy
-pydantic_settings
 httpx
+sqlalchemy
+motor
+pydantic_settings
 asyncpg
+requests
+bs4
