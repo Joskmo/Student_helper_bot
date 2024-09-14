@@ -11,7 +11,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import StateFilter
 
-from app.bot.handlers import profile, createOrEditProfile, tests, editProfile, addToGroup
+from app.bot.handlers import profile, createOrEditProfile, tests, editProfile, addToGroup, schedule
 from app.YaDisk.forBot import diskHandlers
 from app.bot.tokenLoader import config
 
@@ -36,7 +36,8 @@ async def main():
         tests.router,
         diskHandlers.router,
         editProfile.router,
-        addToGroup.router
+        addToGroup.router,
+        schedule.router
     )
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
