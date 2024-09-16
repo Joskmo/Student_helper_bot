@@ -13,13 +13,12 @@ async def add_schedule(schedule):
 
 
 async def get_schedule(group_name, week_number):
-    if (week_number):
-        schedule = await collection.find_one({"group": group_name, "week_number": week_number})
-    else:
-        schedule = await collection.find_one({"group": group_name})
+    schedule = await collection.find_one({"group": group_name, "week_number": week_number})
+
     return schedule
 
 
+# not used yet
 async def update_schedule(group_name, week_number, new_subject):
     await collection.update_one(
         {"group": group_name, "week_number": week_number},
@@ -27,7 +26,7 @@ async def update_schedule(group_name, week_number, new_subject):
     )
     print(f'Расписание для {group_name} на неделю {week_number} обновлено.')
 
-
+# not used yet
 async def delete_schedule(group_name, week_number):
     await collection.delete_one({"group": group_name, "week_number": week_number})
     print(f'Расписание для {group_name} на неделю {week_number} удалено.')

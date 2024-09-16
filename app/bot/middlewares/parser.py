@@ -58,6 +58,7 @@ def get_schedule(group_dict: dict):
     soup = BeautifulSoup(response, 'html.parser')
 
     tables = soup.find_all('table', class_=['table table-light', 'table table-light today'])
+    cur_week = soup.find('input', id='weekNum').get('value')
 
     for day, day_num in zip(days_of_week, range(0, 6)):
         
@@ -109,7 +110,7 @@ def get_schedule(group_dict: dict):
     # with open('test.json', 'w', encoding='utf-8') as file:
     #     json.dump(rasp_dict, file, indent=4, ensure_ascii=False)
 
-    return(rasp_dict)
+    return rasp_dict, int(cur_week)
 
 if __name__ == "__main__":
     get_schedule({
