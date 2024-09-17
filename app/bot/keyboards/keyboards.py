@@ -128,3 +128,20 @@ def apply_student(students_list) -> InlineKeyboardMarkup:
     kb.button(text=f'Никого', callback_data="nobody")
     kb.adjust(1)
     return kb.as_markup()
+
+
+def schedule_navi() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text="<<<", callback_data="prev_week")
+    kb.button(text=">>>", callback_data="next_week")
+    kb.button(text="Ввести номер группы", callback_data="enter_group")
+    kb.adjust(2)
+    return kb.as_markup()
+
+
+def manual_group() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Ввести номер группы", callback_data="enter_group")
+    kb.adjust(1)
+    return kb.as_markup()
+

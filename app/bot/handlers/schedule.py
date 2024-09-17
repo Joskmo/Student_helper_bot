@@ -1,8 +1,12 @@
 from aiogram import Router, F
-from aiogram.filters import StateFilter
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
+from aiogram.filters import StateFilter
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
 from app.DataBase.requests import get_group_by_student
 from app.bot.middlewares.schedule_finder import find_schedule, find_week
+
+import app.bot.keyboards.keyboards as kb
 
 
 router = Router()
@@ -35,8 +39,14 @@ def schedule_parser(schedule):
     
     return reply_text
 
-@router.message(F.text.lower() == "открыть расписание", StateFilter(None))
-async def get_schedule(message: Message):
+
+class ScheduleState(StatesGroup):
+    week_num = State()
+    group_name = State()
+
+
+@router.message(F.text.lower() == "открыть расписание")
+async def get_schedule(message: Message, state: FSMContext):
     tg_nickname = message.from_user.username
     group = await get_group_by_student(tg_nickname)
     if group:
@@ -45,7 +55,28 @@ async def get_schedule(message: Message):
         if week_num:
             res = await find_schedule(group.full_name, week_num)
             reply_text = f"<b>Расписание на неделю №{res['week_number']}</b>\n" + schedule_parser(res['schedule'])
-            await message.answer(reply_text)
+            await state.update_data(week_num=res['week_number'], group_name = group.full_name)
+            await message.answer(reply_text, reply_markup=kb.schedule_navi())
+            await state.set_state(ScheduleState.week_num)
         else: await message.answer(f'Для указанной группы не найдено расписание. Проверь корректность данных')
     else: 
         await message.answer(f'У тебя не указана группа')
+
+
+@router.callback_query(lambda c: c.data in ['prev_week', 'next_week'], ScheduleState.week_num)
+async def week_change(call: CallbackQuery, state: FSMContext):
+    user_data = await state.get_data()
+    week_number = user_data.get('week_num')
+    group_name = user_data.get('group_name')
+    if call.data == "prev_week": 
+        week_number -= 1
+    elif call.data == "next_week":
+        week_number += 1
+
+    await state.update_data(week_num = week_number)
+    res = await find_schedule(group_name, week_number)
+    reply_text = f"<b>Расписание на неделю №{res['week_number']}</b>\n" + schedule_parser(res['schedule'])
+    await call.message.edit_text(reply_text, reply_markup=kb.schedule_navi())
+
+
+# need to write code which will handle any other answers or callbacks
