@@ -28,6 +28,8 @@ async def cmd_start(message: Message):
     content = Text("Привет, ", message.from_user.first_name, "!")
     await message.answer(**content.as_kwargs(), reply_markup=kb.main_kb())
 
+async def entry_point():
+    await Message.__new__.answer(text="Выбери пункт меню", reply_markup=kb.main_kb())
 
 async def main():
     dp.include_routers(

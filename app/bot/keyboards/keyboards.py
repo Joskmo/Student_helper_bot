@@ -1,5 +1,4 @@
-from aiogram import types
-from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 
@@ -84,8 +83,8 @@ def edit_pls() -> InlineKeyboardMarkup:
     kb.button(text="Email", callback_data="email")
     kb.adjust(2)
     kb.row(
-        types.InlineKeyboardButton(text="Готово", callback_data="ready"),
-        types.InlineKeyboardButton(text="<< Назад", callback_data="back"),
+        InlineKeyboardButton(text="Готово", callback_data="ready"),
+        InlineKeyboardButton(text="<< Назад", callback_data="back"),
         width=1
     )
     return kb.as_markup()
@@ -134,8 +133,12 @@ def schedule_navi() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text="<<<", callback_data="prev_week")
     kb.button(text=">>>", callback_data="next_week")
-    kb.button(text="Ввести номер группы", callback_data="enter_group")
     kb.adjust(2)
+    kb.row(
+        InlineKeyboardButton(text="Ввести номер группы", callback_data="enter_group"),
+        InlineKeyboardButton(text="Выйти из расписания", callback_data="sched_exit"),
+        width=1
+    )
     return kb.as_markup()
 
 
@@ -145,3 +148,10 @@ def manual_group() -> InlineKeyboardMarkup:
     kb.adjust(1)
     return kb.as_markup()
 
+
+def sched_enter_group() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Поиск группы", callback_data="sched_find_group")
+    kb.button(text="Выход", callback_data="sched_exit")
+    kb.adjust(1)
+    return kb.as_markup()
