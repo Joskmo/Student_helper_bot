@@ -54,6 +54,11 @@ def get_schedule(group_dict: dict):
         headers=headers,
     ).text
 
+
+    with open('sample.html', 'w', encoding='utf-8') as file:
+        file.write(response)
+
+
     # parse HTML data
     soup = BeautifulSoup(response, 'html.parser')
 
@@ -62,7 +67,7 @@ def get_schedule(group_dict: dict):
 
     for day, day_num in zip(days_of_week, range(0, 6)):
         
-        time_flag = False
+        # time_flag = False
         
         day_table = next((table for table in tables if day in table.find('h5').get_text()), None)
         if day_table:
@@ -71,7 +76,6 @@ def get_schedule(group_dict: dict):
             date = date_text.split(', ')[1]
             cur_day = classes.Day(date=date, name=string.capwords(day)) # date
 
-            # find only lessons
             slots = day_table.find_all('tr', class_='slot load-lecture') + day_table.find_all('tr', class_='slot load-seminar-2') + day_table.find_all('tr', class_='slot load-lab')
             if slots:
                 cur_day.lessons = []
@@ -79,9 +83,6 @@ def get_schedule(group_dict: dict):
                     
                     # info about lesson num(). We need only num of pair -> use regular expression
                     time_info = int(re.match(r'\d', (slot.find('span', class_='pcap').get_text(strip=True)))[0])
-                    if (not time_flag):
-                        cur_day.first_lesson_num = time_info # first_lesson_num
-                        time_flag = True
                     
                     cur_less = classes.Lesson(num=time_info)
                     cur_less.time = time_dict[time_info]

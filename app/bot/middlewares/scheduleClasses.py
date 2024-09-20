@@ -11,5 +11,5 @@ class Lesson(BaseModel):
 class Day(BaseModel):
     date: str # <needs to be parsed>
     name: str
-    first_lesson_num: Optional[int] = None # <from min num>
+    # first_lesson_num: Optional[int] = None # <from min num>
     lessons: Optional[List[Lesson]] = None # <smt like link>
