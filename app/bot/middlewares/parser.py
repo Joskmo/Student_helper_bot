@@ -55,10 +55,6 @@ def get_schedule(group_dict: dict):
     ).text
 
 
-    with open('sample.html', 'w', encoding='utf-8') as file:
-        file.write(response)
-
-
     # parse HTML data
     soup = BeautifulSoup(response, 'html.parser')
 
@@ -66,8 +62,6 @@ def get_schedule(group_dict: dict):
     cur_week = soup.find('input', id='weekNum').get('value')
 
     for day, day_num in zip(days_of_week, range(0, 6)):
-        
-        # time_flag = False
         
         day_table = next((table for table in tables if day in table.find('h5').get_text()), None)
         if day_table:
