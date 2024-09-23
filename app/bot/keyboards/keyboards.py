@@ -69,6 +69,7 @@ def what_to_edit() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text="Все данные", callback_data="no_manual")
     kb.button(text="Что-то конкретное", callback_data="smth")
+    kb.button(text="Вернуться назад", callback_data="profile")
     kb.adjust(1)
     return kb.as_markup()
 
@@ -93,7 +94,7 @@ def edit_pls() -> InlineKeyboardMarkup:
 def in_group() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text="Сменить группу", callback_data="change_group")
-    kb.button(text="Назад", callback_data="back_to_profile")
+    kb.button(text="Назад", callback_data="profile")
     return kb.as_markup()
 
 

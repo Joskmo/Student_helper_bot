@@ -11,7 +11,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import StateFilter
 
-from app.bot.handlers import profile, createOrEditProfile, tests, editProfile, addToGroup, schedule
+from app.bot.handlers import profile, createOrEditProfile, editProfile, addToGroup, schedule
 from app.YaDisk.forBot import diskHandlers
 from app.bot.tokenLoader import config
 
@@ -34,7 +34,6 @@ async def main():
     dp.include_routers(
         profile.router,
         createOrEditProfile.router,
-        tests.router,
         diskHandlers.router,
         editProfile.router,
         addToGroup.router,

@@ -41,7 +41,8 @@ async def edit_profile(call: CallbackQuery):
 <b>Email:</b> <i>{student.email if (student.email is not None) else 'Не указано'}</i>
 <b>Дата рождения:</b> <i>{parsed_bd if (student.birthday is not None) else 'Не указано'}</i>
 <b>Староста:</b> <i>{'Да' if student.is_headman else 'Нет'}</i> """
-    await call.message.edit_text(f'<b>Текущие данные:</b><blockquote>{user_data}</blockquote>Что будем менять?', reply_markup=kb.what_to_edit())
+    await call.message.edit_text(f'<b>Текущие данные:</b><blockquote>{user_data}</blockquote>Что будем менять?', 
+                                 reply_markup=kb.what_to_edit())
     await call.answer(cache_time=5)
 
 

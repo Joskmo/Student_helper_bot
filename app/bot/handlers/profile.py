@@ -77,6 +77,12 @@ f"""<b>Полное название группы:</b> <i>{group.full_name}</i>
         )
 
 
+@router.callback_query(F.data.casefold() == "profile")
+async def back(call: CallbackQuery):
+    await call.message.delete()
+    await my_profile(call.message, call.from_user.username)
+
+
 @router.callback_query(F.data.casefold() == "no_i_dont")
 async def no_i_dont(call: CallbackQuery):
     await call.answer(cache_time=5)
