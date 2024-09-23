@@ -98,6 +98,13 @@ def get_schedule(group_dict: dict):
                         cur_less.place = location
 
                     cur_day.lessons.append(cur_less)
+                    
+                # sort for classes by num: 
+                n = len(cur_day.lessons)
+                for i in range(0, n-1):
+                    for j in range(0, n-1):
+                        if (cur_day.lessons[j].num > cur_day.lessons[j+1].num): 
+                            cur_day.lessons[j], cur_day.lessons[j+1] = cur_day.lessons[j+1], cur_day.lessons[j]
 
             day_dict = cur_day.model_dump()
             rasp_dict[str(day_num)] = day_dict
