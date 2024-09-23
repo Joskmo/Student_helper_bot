@@ -23,6 +23,7 @@ router = Router()
 async def get_group_list(call: CallbackQuery):
     group_list = await db.get_groups()
     await call.message.edit_text(f'Выбери группу:', reply_markup=kb.select_group(group_list))
+    await call.answer(cache_time=1)
 
 
 @router.callback_query(F.data.startswith("num_"))

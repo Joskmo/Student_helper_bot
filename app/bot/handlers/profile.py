@@ -2,7 +2,6 @@ from aiogram import Router, F
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from aiogram.filters.command import Command
 from aiogram.filters import StateFilter
-from aiogram.fsm.context import FSMContext
 from aiogram.utils.formatting import Bold, BlockQuote, Text
 from typing import Optional
 
@@ -48,7 +47,7 @@ f"""<b>Фамилия:</b> <i>{student.last_name}</i>
         await msg.delete()
 
 
-@router.callback_query(F.data.startswith('get_group_number'))
+@router.callback_query(F.data == "get_group_number")
 async def get_group_num(call: CallbackQuery):
     tg_nickname = call.from_user.username
     group = await get_group_by_student(tg_nickname)
@@ -64,7 +63,7 @@ f"""<b>Полное название группы:</b> <i>{group.full_name}</i>
     <b>Фамилия:</b> {group.last_name}
     <b>Telegram: </b>@{group.tg_nickname}"""
     )
-        await call.answer(cache_time=5)
+        await call.answer(cache_time=1)
         await call.message.edit_text(
             text=f'<b>Информация о твоей группе:</b> <blockquote>{group_data}</blockquote>',
             reply_markup=kb.in_group()
@@ -88,4 +87,10 @@ async def no_i_dont(call: CallbackQuery):
     await call.answer(cache_time=5)
     await call.message.delete()
     await my_profile(message=call.message, tg_nickname=call.from_user.username)
-    
+
+
+@router.callback_query(F.data.casefold() == "to_main_menu") 
+async def exit_schedule(call: CallbackQuery):
+    await call.message.delete()
+    await call.message.answer("Выбери пункт меню", reply_markup=kb.main_kb())
+    await call.answer(cache_time=1)

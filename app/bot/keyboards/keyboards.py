@@ -19,6 +19,7 @@ def profile_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text="Узнать номер группы", callback_data="get_group_number")
     kb.button(text="Редактировать профиль", callback_data="edit_profile")
+    kb.button(text="В главное меню", callback_data="to_main_menu")
     kb.adjust(1)
     return kb.as_markup()
 
@@ -110,6 +111,7 @@ def select_group(group_list) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     for group_id in group_list:
         kb.button(text=f'{group_id.full_name}', callback_data=f'num_{group_id.group_id}')
+    kb.button(text="Назад", callback_data="get_group_number")
     kb.adjust(1)
     return kb.as_markup()
 
