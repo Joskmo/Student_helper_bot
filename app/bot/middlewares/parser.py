@@ -40,11 +40,11 @@ headers = {
     'X-Requested-With': 'XMLHttpRequest',
 }
 
+# Default link
 link = "https://rasp.rea.ru/Schedule/ScheduleCard?selection="
 
+
 def get_schedule(group_dict: dict): 
-    # weekNum = 1
-    # group_num = "15.27Д-БИ20/22б"
     group_link = link + group_dict['group_num'].lower() + "&weekNum=" + (str(group_dict['week_num']) if group_dict['week_num'] else "")
 
 

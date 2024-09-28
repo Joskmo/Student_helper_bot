@@ -154,7 +154,18 @@ def manual_group() -> InlineKeyboardMarkup:
 
 def sched_enter_group() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text="Поиск группы", callback_data="sched_find_group")
+    kb.button(text="Выйти из расписания", callback_data="sched_exit")
+    kb.adjust(1)
+    return kb.as_markup()
+
+
+def groups_list(group_nums = None) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardBuilder()
+    if group_nums:
+        i = int(0)
+        for num in group_nums:
+            kb.button(text=num, callback_data="id_" + num)
+            i += 1
     kb.button(text="Выход", callback_data="sched_exit")
     kb.adjust(1)
     return kb.as_markup()

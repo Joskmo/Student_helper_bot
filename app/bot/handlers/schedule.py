@@ -4,7 +4,7 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from app.DataBase.requests import get_group_by_student
-from app.bot.middlewares.schedule_finder import find_schedule, find_week, validate_group
+from app.bot.middlewares.schedule_finder import find_schedule, find_week, validate_group, groups_finder
 
 import app.bot.keyboards.keyboards as kb
 
@@ -44,6 +44,7 @@ class ScheduleState(StatesGroup):
     group_name = State()
     week_num = State()
     entering_group = State()
+    group_list = State()
 
 
 @router.message(F.text.lower() == "открыть расписание")
@@ -71,6 +72,7 @@ async def week_change(call: CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     week_number = user_data.get('week_num')
     group_name = user_data.get('group_name')
+
     if call.data == "prev_week": 
         week_number -= 1
     elif call.data == "next_week":
@@ -98,11 +100,10 @@ async def exit_schedule(call: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.casefold() == "enter_group", ScheduleState.week_num)
 async def sched_other_group(call: CallbackQuery, state: FSMContext):
-    # нужна валидация группы
     await state.clear()
     await state.set_state(ScheduleState.entering_group)
     await call.message.edit_text(
-        "Введите полный номер группы или воспользуйтесь кнопкой ниже для поиска", 
+        "Введите полный или частичный номер группы", 
         reply_markup=kb.sched_enter_group()
     )
     await call.answer(cache_time=1)
@@ -123,4 +124,34 @@ async def enterging_group(message: Message, state: FSMContext):
         await message.answer(reply_text, reply_markup=kb.schedule_navi())
         await state.set_state(ScheduleState.week_num)
     else:
-        await message.answer("Группа не найдена. Проверь введённые данные")
+        groups = groups_finder(message.text.lower())
+        keyboard_data = []
+        if groups:
+            reply_msg = "Список найденных групп:"
+            for group in groups:
+                keyboard_data.append(group['num'])
+                reply_msg +=  f'''
+<blockquote>Номер группы: <b>{group['num']}</b>
+Факультет: {group['faculty']}
+Курс: {group['year']}
+Степень обучения: {group['degree']}</blockquote>'''
+            reply_msg += f"<b>Выбери группу по кнопкам ниже:</b>"
+        else: 
+            reply_msg = f"По запросу <i>{message.text}</i> ничего не найдено"
+        await message.answer(reply_msg, reply_markup=kb.groups_list(keyboard_data))
+
+
+@router.callback_query(F.data.startswith("id_"), ScheduleState.entering_group)
+async def auto_finder(call: CallbackQuery, state: FSMContext):
+    group = call.data.split('_')[1]
+    week_num = find_week(group)
+    await state.update_data(group_name=group)
+    res = await find_schedule(group, week_num)
+    reply_text = (
+        f"<b>Расписание для группы </b>{group}\n <b>Неделя №{res['week_number']}</b>\n" + 
+        schedule_parser(res['schedule'])
+        )
+    await state.update_data(week_num=res['week_number'], group_name = group)
+    await call.message.edit_text(reply_text, reply_markup=kb.schedule_navi())
+    await state.set_state(ScheduleState.week_num)
+    await call.answer(cache_time=5)
